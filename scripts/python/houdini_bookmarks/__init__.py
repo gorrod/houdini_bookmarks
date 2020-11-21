@@ -1,0 +1,1 @@
+"""init of houdini_bookmarks"""

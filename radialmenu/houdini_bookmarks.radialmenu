@@ -1,0 +1,9 @@
+{
+	"fileversion":"18.5.351",
+	"name":"houdini_bookmarks",
+	"categories":"Standard",
+	"pane":"network",
+	"label":"Houdini Bookmarks",
+	"type":"script_submenu",
+	"script":"from houdini_bookmarks import houdini_bookmarks\n\ndef menu_from_item(item):\n    menu = {}\n    for row in range(0, 8 if item.rowCount() > 7 else item.rowCount()):\n        child = item.child(row, 0)\n        if child.hasChildren():\n            menu[row] = {\"type\": \"script_submenu\",\n                         \"label\": child.text(),\n                         \"script\": lambda lambda_item=child, **kwargs : menu_from_item(lambda_item)\n                         }\n        else:\n            func = houdini_bookmarks.eval_open_item_function\n            menu[row] = {\"type\": \"script_action\",\n                         \"label\": child.text(),\n                         \"script\": lambda lambda_item=child, **kwargs : func(lambda_item, panel)\n                         }\n    radialmenu.setRadialMenu(menu)\n\npane_tab = hou.ui.findPaneTab(\"Houdini_Bookmarks\")\npanel = pane_tab.floatingPanel()\nif panel is None:\n    panel = hou.ui.curDesktop()\nroot_item = pane_tab.activeInterfaceRootWidget().tab_widget.currentWidget().model().invisibleRootItem()\n\nmenu_from_item(root_item)\n"
+}
