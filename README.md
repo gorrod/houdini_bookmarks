@@ -6,7 +6,7 @@ Houdini Bookmarks is a Houdini Python Panel allowing the user to save and quickl
 
 A video showing the intended uses of this Python Panel (pw: HoudiniBM):
 
-https://vimeo.com/482036382
+https://vimeo.com/482051977
 
 ## Setup
 
