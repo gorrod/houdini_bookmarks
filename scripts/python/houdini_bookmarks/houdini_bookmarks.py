@@ -477,6 +477,8 @@ class TreeView(QtWidgets.QTreeView):
                         text = QtCore.QUrl(path).fileName()
                         file_info = QtCore.QFileInfo(text)
                         icon = QtWidgets.QFileIconProvider().icon(file_info)
+                        size = QtCore.QSize(1,1)
+                        icon = icon.pixmap(icon.actualSize(size))
                         category = "file"
                     elif event.mimeData().hasUrls():
                         category = "webUrl"
