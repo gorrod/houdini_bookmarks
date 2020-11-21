@@ -455,7 +455,10 @@ class TreeView(QtWidgets.QTreeView):
 
     def dropEvent(self, event):
         if(event.source() == self): 
-            super(TreeView, self).dropEvent(event)
+            try:
+                super(TreeView, self).dropEvent(event)
+            except:
+                return
         else:
             data_texts = list()
             if event.mimeData().hasUrls():
