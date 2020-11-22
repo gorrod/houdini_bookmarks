@@ -28,6 +28,8 @@ class WrongVersionView(QtWidgets.QFrame):
         layout.addWidget(download_link_label)
         layout.setAlignment(QtCore.Qt.AlignCenter)
         self.setLayout(layout)
+
+
 class MainView(QtWidgets.QFrame):
     def __init__(self, panel = None):
         super(MainView, self).__init__()
@@ -143,10 +145,7 @@ class MainView(QtWidgets.QFrame):
         for tab_index in range(self.tab_widget.count()):
             tree_view = self.tab_widget.widget(tab_index)
             self.remove_node_callbacks(tree_view)
-        try:
-            super(MainView, self).closeEvent(event)
-        except:
-            pass
+        super(MainView, self).closeEvent(event)
     
     def remove_node_callbacks(self, tree_view):
         if tree_view is not None:
@@ -372,19 +371,13 @@ class TextEdit(QtWidgets.QTextEdit):
         self.setStyleSheet("QTextEdit { border: none; }")
 
     def focusInEvent(self, event):
-        try:
-            super(TextEdit, self).focusInEvent(event)
-        except:
-            pass
+        super(TextEdit, self).focusInEvent(event)
         self.receivedFocus.emit()
 
     def focusOutEvent(self, event):
         if self._changed:
             self.editingFinished.emit()
-        try:
-            super(TextEdit, self).focusOutEvent(event)
-        except:
-            pass
+        super(TextEdit, self).focusOutEvent(event)
     
     def handle_text_changed(self):
         self._changed = True
@@ -455,10 +448,8 @@ class TreeView(QtWidgets.QTreeView):
 
     def dropEvent(self, event):
         if(event.source() == self): 
-            try:
-                super(TreeView, self).dropEvent(event)
-            except:
-                return
+            super(TreeView, self).dropEvent(event)
+
         else:
             data_texts = list()
             if event.mimeData().hasUrls():
@@ -655,20 +646,16 @@ class ItemDelegate(QtWidgets.QStyledItemDelegate):
         self._pressed = (index.row(), index.column())
         item = index.model().itemFromIndex(index)
         if event.type() == QtCore.QEvent.MouseMove:
-            try:
-                return super(ItemDelegate, self).editorEvent(event, model, option, index)
-            except:
-                return False
+            return super(ItemDelegate, self).editorEvent(event, model, option, index)
+
         if event.type() == QtCore.QEvent.MouseButtonPress or event.type() == QtCore.QEvent.MouseButtonDblClick:
             for rect in item.button_rects:
                 if rect.contains(event.pos()) is True:
                     return True
             self.event_pos = QtCore.QPoint()
             self._pressed = None
-            try:
-                return super(ItemDelegate, self).editorEvent(event, model, option, index)
-            except:
-                return False
+            return super(ItemDelegate, self).editorEvent(event, model, option, index)
+
         elif event.type() == QtCore.QEvent.MouseButtonRelease:
             if self._pressed == (index.row(), index.column()):
                 if item.button_rects[0].contains(event.pos()):

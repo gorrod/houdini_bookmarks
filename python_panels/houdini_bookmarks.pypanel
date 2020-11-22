@@ -10,16 +10,26 @@
     
 reload(houdini_bookmarks)
 
-def onCreateInterface():
+def onCreateInterface():        
+    widget = None
+    pane_tab = kwargs["paneTab"]
     if hou.applicationVersion()[0] < 18:
-        return houdini_bookmarks.WrongVersionView()
+        display_widget[0] = houdini_bookmarks.WrongVersionView()
     else:
-        pane_tab = kwargs["paneTab"]
+        existing_bm_panetab = hou.ui.findPaneTab("Houdini_Bookmarks")
+        bm_panetab_exists = existing_bm_panetab is not None
+        existing_bm_panetab_is_self = existing_bm_panetab == pane_tab
+        if bm_panetab_exists and not existing_bm_panetab_is_self:
+            existing_bm_panetab.close()
+            print("Closed previous Houdini Bookmarks panetab.")
         pane_tab.setName("Houdini_Bookmarks")
         panel = pane_tab.floatingPanel()
         if panel is None:
             panel = hou.ui.curDesktop()
-        return houdini_bookmarks.MainView(panel)
+        widget = houdini_bookmarks.MainView(panel)
+    return widget
+
+
 ]]></script>
     <includeInToolbarMenu menu_position="108" create_separator="false"/>
     <help><![CDATA[]]></help>
