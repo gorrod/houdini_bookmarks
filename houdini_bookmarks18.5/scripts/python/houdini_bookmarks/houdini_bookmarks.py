@@ -7,37 +7,19 @@ import json
 
 version = hou.applicationVersion()
 icon_path = [hou.expandString("$HOME"),"houdini{}.{}".format(version[0], version[1]),"config","Icons","houdini_bookmarks_icons"]
+icon_path = [hou.expandString("$HBM"),"config","Icons","houdini_bookmarks_icons"]
 icon_path = os.path.join(*icon_path)
-
-class WrongVersionView(QtWidgets.QFrame):
-    def __init__(self):
-        super(WrongVersionView, self).__init__()
-        self.setup()
-
-    def setup(self):
-        version_warning_label = QtWidgets.QLabel("Houdini " + hou.applicationVersionString() + " is not supported. Get Houdini 18.0 or above.")
-        version_warning_label.setAlignment(QtCore.Qt.AlignCenter)        
-        download_link_label = QtWidgets.QLabel()
-        download_link_label.setText("<a href=\"https://www.sidefx.com/download/\" style=\"color: #F8F8FF;\">Download Here</a>")
-        download_link_label.setTextFormat(QtCore.Qt.RichText)
-        download_link_label.setTextInteractionFlags(QtCore.Qt.TextBrowserInteraction)
-        download_link_label.setOpenExternalLinks(True)
-        download_link_label.setAlignment(QtCore.Qt.AlignCenter)
-        layout = QtWidgets.QVBoxLayout()
-        layout.addWidget(version_warning_label)
-        layout.addWidget(download_link_label)
-        layout.setAlignment(QtCore.Qt.AlignCenter)
-        self.setLayout(layout)
-
 
 class MainView(QtWidgets.QFrame):
     def __init__(self, panel = None):
         super(MainView, self).__init__()
         self.panel = panel
+        self.icons = self.load_icons(["add.svg", "jump.svg", "show_parms.svg", "file.svg", "delete.svg", "blank.svg", "internet.svg"])
         self.setup_widgets()
         self.setup_layouts()
         self.setup_scene_callbacks()
         self.load_bookmarks_from_session()
+
 
     def mousePressEvent(self, event):
         return False
@@ -333,6 +315,12 @@ class MainView(QtWidgets.QFrame):
         except:
             return
 
+    def load_icons(self, files):
+        icons = {}
+        for file in files:
+            icons[os.path.splitext(file)[0]] = QtGui.QIcon(icon_path+"/"+file)
+        return icons
+
 class TabBar(QtWidgets.QTabBar):
     def __init__(self):
         super(TabBar, self).__init__()
@@ -409,6 +397,7 @@ class TreeView(QtWidgets.QTreeView):
         self.addAction(delete_selected_action)
         self.setStyleSheet("QTreeView { border: none; }")
         self.node_callbacks = {}
+        self.icons = self.parent().parent().parent().parent().icons
 
     def add_folder(self):
         indices = self.selectedIndexes()
@@ -466,7 +455,7 @@ class TreeView(QtWidgets.QTreeView):
                     session_id = ""
                     color = (0.8, 0.8, 0.8)
                     icon_type = ""
-                    icon = QtGui.QPixmap(icon_path+"/blank.svg")
+                    icon = self.icons["blank"]
                     if "file://" in text and event.mimeData().hasUrls():
                         text = QtCore.QUrl(path).fileName()
                         file_info = QtCore.QFileInfo(text)
@@ -476,7 +465,7 @@ class TreeView(QtWidgets.QTreeView):
                         category = "file"
                     elif event.mimeData().hasUrls():
                         category = "webUrl"
-                        icon = QtGui.QPixmap(icon_path+"/internet.svg")
+                        icon = self.icons["internet"]
                     else:
                         h_item = hou.item(text)
                         h_session_id = h_item.sessionId()
@@ -589,6 +578,7 @@ class ItemDelegate(QtWidgets.QStyledItemDelegate):
         super(ItemDelegate, self).__init__(parent)
         self._pressed = None
         self.event_pos = None
+        self.icons = self.parent().parent().parent().parent().parent().icons
 
     def paint(self, painter, option, index):
         save_option_rect = option.rect
@@ -598,30 +588,30 @@ class ItemDelegate(QtWidgets.QStyledItemDelegate):
         painter.save()
         buttons = list()
         buttons.append(QtWidgets.QStyleOptionButton())
-        buttons[0].icon = QtGui.QIcon(icon_path+"/delete.svg")
+        buttons[0].icon = self.icons["delete"]
         buttons[0].iconSize = QtCore.QSize(15,15)
         item = index.model().itemFromIndex(index)
         if item.data()["category"] == "folder":
             buttons.append(QtWidgets.QStyleOptionButton())
-            buttons[1].icon = QtGui.QIcon(icon_path+"/add.svg")
+            buttons[1].icon = self.icons["add"]
             buttons[1].iconSize = QtCore.QSize(10,10)
         elif item.data()["category"] in {"stickynote", "webUrl"}:
             buttons.append(QtWidgets.QStyleOptionButton())
-            buttons[1].icon = QtGui.QIcon(icon_path+"/jump.svg")
+            buttons[1].icon = self.icons["jump"]
             buttons[1].iconSize = QtCore.QSize(10,10)
         elif item.data()["category"] == "node":
             buttons.append(QtWidgets.QStyleOptionButton())
-            buttons[1].icon = QtGui.QIcon(icon_path+"/jump.svg")
+            buttons[1].icon = self.icons["jump"]
             buttons[1].iconSize = QtCore.QSize(10,10)
             buttons.append(QtWidgets.QStyleOptionButton())
-            buttons[2].icon = QtGui.QIcon(icon_path+"/show_parms.svg")
+            buttons[2].icon = self.icons["show_parms"]
             buttons[2].iconSize = QtCore.QSize(10,10)
         elif item.data()["category"] == "file":
             buttons.append(QtWidgets.QStyleOptionButton())
-            buttons[1].icon = QtGui.QIcon(icon_path+"/jump.svg")
+            buttons[1].icon = self.icons["jump"]
             buttons[1].iconSize = QtCore.QSize(10,10)
             buttons.append(QtWidgets.QStyleOptionButton())
-            buttons[2].icon = QtGui.QIcon(icon_path+"/file.svg")
+            buttons[2].icon = self.icons["file"]
             buttons[2].iconSize = QtCore.QSize(10,10)
         item.button_rects = list()
         for idx, button in enumerate(buttons):
@@ -629,7 +619,6 @@ class ItemDelegate(QtWidgets.QStyledItemDelegate):
             button.rect = QtCore.QRect(option.rect.right()-button_width*(idx+1)-button_spacing*idx, option.rect.top(), button_width, option.rect.height())
             button.palette = option.palette
             item.button_rects.append(QtCore.QRect(option.rect.right()-button_width*(idx+1)-button_spacing*idx, option.rect.top(), button_width, option.rect.height()))
-
         if self._pressed and self._pressed == (index.row(), index.column()):
             for button in buttons:
                 if button.rect.contains(self.event_pos):
@@ -699,7 +688,7 @@ class ItemDelegate(QtWidgets.QStyledItemDelegate):
                 if rect.contains(event.pos()) is True:
                     return True
             return super(ItemDelegate, self).editorEvent(event, model, option, index)
-    
+
 def add_folder(item):
     new_item = TreeItem()
     icon_type = ""

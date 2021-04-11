@@ -1,0 +1,13 @@
+{
+    "env": [
+      {
+        "HBM":
+        [                
+            {
+                "houdini_version == '18.5'": "$HOUDINI_USER_PREF_DIR/houdini_bookmarks18.5"
+            }
+        ]          
+      }
+    ],
+    "path": "$HBM"
+}
