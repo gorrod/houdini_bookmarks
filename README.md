@@ -1,6 +1,6 @@
 # Houdini Bookmarks
 
-Houdini Bookmarks is a Houdini Python Panel aimed to help organize a scene by bookmarking and quickly accesing nodes, online references and file locations.
+Houdini Bookmarks is a Houdini Python Panel aimed to help organize a scene by bookmarking and quickly accessing nodes, online references and file locations.
 
 ## Video Demo
 
