@@ -4,7 +4,7 @@ Houdini Bookmarks is a Houdini Python Panel allowing the user to save and quickl
 
 ## Video Demo
 
-A video showing the intended uses of this Python Panel (pw: HoudiniBM):
+A video showing the intended uses of this Python Panel:
 
 https://vimeo.com/482051977
 
@@ -12,16 +12,10 @@ https://vimeo.com/482051977
 
 ### Merge the provided folders into these folders:
 
-scripts -> $HOME/houdiniXX.X/scripts
+packages -> $HOME/houdiniXX.X/packages
 
-python_panels -> $HOME/houdiniXX.X/python_panels
-
-config -> $HOME/houdiniXX.X/config
-
-### For Houdini 18.5 and above:
-
-radialmenu -> $HOME/houdiniXX.X/radialmenu
+houdini_bookmarks18.5 -> $HOME/houdiniXX.X
 
 ## Disclaimer
 
-This Python Panel is only tested on Windows 10 and only works with Houdini 18.0 and above.
+This Python Panel is only tested on Windows 10 and only works with Houdini 18.5 and above.
