@@ -1,12 +1,12 @@
 # Houdini Bookmarks
 
-Houdini Bookmarks is a Houdini Python Panel allowing the user to save and quickly access nodes and urls by dragging them into the panel.
+Houdini Bookmarks is a Houdini Python Panel aimed to help organize a scene by bookmarking and quickly accesing nodes, online references and file locations.
 
 ## Video Demo
 
 A video showing the intended uses of this Python Panel:
 
-https://vimeo.com/482051977
+https://vimeo.com/535568905
 
 ## Setup
 
