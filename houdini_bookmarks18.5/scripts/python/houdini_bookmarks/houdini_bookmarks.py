@@ -387,12 +387,16 @@ class TreeView(QtWidgets.QTreeView):
         self.setHeaderHidden(True)
         self.setContextMenuPolicy(QtCore.Qt.ActionsContextMenu)
         add_folder_action = QtWidgets.QAction(self)
+        add_bookmark_action = QtWidgets.QAction(self)
         delete_selected_action = QtWidgets.QAction(self)
         add_folder_action.setText("Add Folder")
+        add_bookmark_action.setText("Add Bookmark")
         delete_selected_action.setText("Delete Selected")
         add_folder_action.triggered.connect(self.add_folder)
+        add_bookmark_action.triggered.connect(self.add_bookmark)
         delete_selected_action.triggered.connect(self.delete_selected)
         self.addAction(add_folder_action)
+        self.addAction(add_bookmark_action)
         self.addAction(delete_selected_action)
         self.setStyleSheet("QTreeView { border: none; }")
         self.node_callbacks = {}
@@ -408,7 +412,28 @@ class TreeView(QtWidgets.QTreeView):
                 item = item.parent()
         if item is None:
             item = self.model()
-        add_folder(item)            
+        add_folder(item)
+    
+    def add_bookmark(self):
+        input = hou.ui.readInput("Enter a Bookmark Path:", buttons=("Node", "File", "URL", "Cancel"), default_choice=-1, close_choice=3)
+        if input[0] is 3:
+            return
+        path = input[1]
+        data = QtCore.QMimeData()
+        if input[0] is 1:
+            path.encode("unicode_escape")
+            path = "file:///"+path
+        if input[0] in [1,2]:
+            url = QtCore.QUrl()
+            url.setUrl(path)
+            data.setUrls([url])
+        pos = QtCore.QPointF(1,1)
+        action = QtCore.Qt.DropActions()
+        data.setText(path)
+        buttons = QtCore.Qt.MouseButtons()
+        modifier = QtCore.Qt.KeyboardModifiers()
+        event = QtGui.QDropEvent(pos, action, data, buttons, modifier)
+        self.dropEvent(event)
     
     def delete_selected(self):
         indicies = self.selectedIndexes()
@@ -449,7 +474,6 @@ class TreeView(QtWidgets.QTreeView):
     def dropEvent(self, event):
         if(event.source() == self): 
             super(TreeView, self).dropEvent(event)
-
         else:
             data_texts = list()
             if event.mimeData().hasUrls():
