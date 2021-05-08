@@ -127,7 +127,6 @@ class MainView(QtWidgets.QFrame):
         for tab_index in range(self.tab_widget.count()):
             tree_view = self.tab_widget.widget(tab_index)
             self.remove_node_callbacks(tree_view)
-        super(MainView, self).closeEvent(event)
     
     def remove_node_callbacks(self, tree_view):
         if tree_view is not None:
@@ -413,7 +412,19 @@ class TreeView(QtWidgets.QTreeView):
     
     def delete_selected(self):
         indicies = self.selectedIndexes()
+        remove_from_indicies = list()
+        for idx in indicies:
+            parent_idx = idx.parent()
+            while self.model().itemFromIndex(parent_idx) is not None:
+                if parent_idx in indicies:
+                    remove_from_indicies.append(idx)
+                    break
+                else:
+                    parent_idx = parent_idx.parent()
+        indicies = list(set(indicies) - set(remove_from_indicies))
+
         indicies = sorted(indicies, key=lambda index: int(index.row()))
+
         for index in reversed(indicies):
             item = self.model().itemFromIndex(index)
             parent_item = index.model().itemFromIndex(index.parent())
