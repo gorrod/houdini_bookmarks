@@ -7,8 +7,6 @@
  in a single file. -->
   <interface name="Houdini Bookmarks" label="Houdini Bookmarks" icon="MISC_python" showNetworkNavigationBar="false" help_url="">
     <script><![CDATA[from houdini_bookmarks import houdini_bookmarks
-    
-reload(houdini_bookmarks)
 
 def onCreateInterface():        
     widget = None
