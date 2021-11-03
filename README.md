@@ -14,7 +14,7 @@ https://vimeo.com/535568905
 
 packages -> $HOME/houdiniXX.X/packages
 
-houdini_bookmarks18.5 -> $HOME/houdiniXX.X
+houdini_bookmarks -> $HOME/houdiniXX.X
 
 ## Disclaimer
 
