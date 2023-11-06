@@ -774,11 +774,19 @@ def eval_open_item_function(item, panel):
     elif item.data()["category"] == "webUrl":
         open_url(item)
 
+def platform_open(path):
+    if platform.system() == "Darwin":
+        subprocess.call(("open", path))
+    elif platform.system() == "Windows":
+        os.startfile(path)
+    else:
+        subprocess.call(("xdg-open", path))
+
 def open_file(item):
-    os.startfile(item.data().get("path"))
+    platform_open(item.data().get("path"))
 
 def open_file_dir(item):
-    os.startfile(os.path.dirname(item.data().get("path")))
+    platform_open(os.path.dirname(item.data().get("path")))
 
 def open_url(item):
     webbrowser.open(item.data().get("path"), new=0, autoraise=True)
