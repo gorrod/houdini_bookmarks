@@ -418,11 +418,11 @@ class TreeView(QtWidgets.QTreeView):
 
     def add_bookmark(self):
         input = hou.ui.readInput("Enter a Bookmark Path:", buttons=("Node", "File", "URL", "Cancel"), default_choice=-1, close_choice=3)
-        if input[0] is 3:
+        if input[0] == 3:
             return
         path = input[1]
         data = QtCore.QMimeData()
-        if input[0] is 1:
+        if input[0] == 1:
             path.encode("unicode_escape")
             path = "file:///"+path
         if input[0] in [1,2]:
