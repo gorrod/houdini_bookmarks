@@ -8,7 +8,7 @@
   <interface name="Houdini Bookmarks" label="Houdini Bookmarks" icon="MISC_python" showNetworkNavigationBar="false" help_url="">
     <script><![CDATA[from houdini_bookmarks import houdini_bookmarks
 
-def onCreateInterface():        
+def onCreateInterface():
     widget = None
     pane_tab = kwargs["paneTab"]
     if hou.applicationVersion()[0] < 18:
