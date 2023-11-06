@@ -2,6 +2,8 @@ from PySide2 import QtWidgets, QtCore, QtGui
 import re
 import os
 import hou
+import platform
+import subprocess
 import webbrowser
 import json
 
@@ -127,7 +129,7 @@ class MainView(QtWidgets.QFrame):
         for tab_index in range(self.tab_widget.count()):
             tree_view = self.tab_widget.widget(tab_index)
             self.remove_node_callbacks(tree_view)
-    
+
     def remove_node_callbacks(self, tree_view):
         if tree_view is not None:
             for key in tree_view.node_callbacks:
@@ -179,9 +181,9 @@ class MainView(QtWidgets.QFrame):
             for index in range(self.tab_widget.count()):
                 choices.append(self.tab_widget.tabBar().tabText(index))
             selection = hou.ui.selectFromList(choices, column_header="Tabs", message="Choose tabs to save:", width= 300, height=300)
-        
+
         data = prepare_save_data(self.tab_widget, selection)
-        
+
         with open(file_path, "w") as f:
             json.dump(data, f, indent=4)
 
@@ -200,7 +202,7 @@ class MainView(QtWidgets.QFrame):
         if hasattr(hou.session, "get_houdini_bookmarks_data"):
             del(hou.session.get_houdini_bookmarks_data)
         hou.setSessionModuleSource(old_data + "\n" + code)
-    
+
     def load_bookmarks_from_session(self):
         if hasattr(hou.session, "get_houdini_bookmarks_data"):
             data = hou.session.get_houdini_bookmarks_data()
@@ -287,7 +289,7 @@ class MainView(QtWidgets.QFrame):
                 h_items.append(hou.item(self.item_path_label.text()))
                 if h_items[0] is not None:
                     h_items[0].parent().copyItemsToClipboard(h_items)
-    
+
     def update_description(self):
         try:
             index = self.tab_widget.currentWidget().selectedIndexes()[0]
@@ -297,7 +299,7 @@ class MainView(QtWidgets.QFrame):
         except:
             self.item_path_label.setText("")
             self.item_note.setText("")
-    
+
     def update_item_note(self):
         try:
             index = self.tab_widget.currentWidget().selectedIndexes()[0]
@@ -328,7 +330,7 @@ class TabBar(QtWidgets.QTabBar):
         def finish_rename():
             self.setTabText(tab, line_edit.text())
             line_edit.deleteLater()
-            
+
         tab = self.tabAt(event.pos())
         rect = self.tabRect(tab)
         top_margin = 3
@@ -365,7 +367,7 @@ class TextEdit(QtWidgets.QTextEdit):
         if self._changed:
             self.editingFinished.emit()
         super(TextEdit, self).focusOutEvent(event)
-    
+
     def handle_text_changed(self):
         self._changed = True
 
@@ -413,7 +415,7 @@ class TreeView(QtWidgets.QTreeView):
         if item is None:
             item = self.model()
         add_folder(item)
-    
+
     def add_bookmark(self):
         input = hou.ui.readInput("Enter a Bookmark Path:", buttons=("Node", "File", "URL", "Cancel"), default_choice=-1, close_choice=3)
         if input[0] is 3:
@@ -434,7 +436,7 @@ class TreeView(QtWidgets.QTreeView):
         modifier = QtCore.Qt.KeyboardModifiers()
         event = QtGui.QDropEvent(pos, action, data, buttons, modifier)
         self.dropEvent(event)
-    
+
     def delete_selected(self):
         indicies = self.selectedIndexes()
         remove_from_indicies = list()
@@ -472,7 +474,7 @@ class TreeView(QtWidgets.QTreeView):
             parent_item.takeRow(item.row())
 
     def dropEvent(self, event):
-        if(event.source() == self): 
+        if(event.source() == self):
             super(TreeView, self).dropEvent(event)
         else:
             data_texts = list()
@@ -557,7 +559,7 @@ class TreeView(QtWidgets.QTreeView):
         save_set_callback(node, self.update_item_path, hou.nodeEventType.NameChanged)
         save_set_callback(node, self.update_item_data, hou.nodeEventType.AppearanceChanged)
         save_set_callback(node, self.mark_node_as_deleted, hou.nodeEventType.BeingDeleted)
-        
+
         parent = node.parent()
         while parent is not None and parent.path().count("/") > 1:
             save_set_callback(parent, self.update_item_path, hou.nodeEventType.NameChanged)
@@ -661,7 +663,7 @@ class ItemDelegate(QtWidgets.QStyledItemDelegate):
         for button in buttons:
             QtWidgets.QApplication.style().drawControl(QtWidgets.QStyle.CE_PushButton, button, painter)
         painter.restore()
-        
+
         option.rect = QtCore.QRect(option.rect.left(), option.rect.top(), option.rect.right()-button_width*3-button_spacing*3-option.rect.left(), option.rect.height())
         QtWidgets.QStyledItemDelegate.paint(self, painter, option, index)
 
@@ -714,7 +716,7 @@ class ItemDelegate(QtWidgets.QStyledItemDelegate):
                             open_parameter_tab(item, event.globalPos())
                         if item.data()["category"] == "file":
                             open_file(item)
-                        
+
             self.event_pos = QtCore.QPoint()
             self._pressed = None
             return True
@@ -734,7 +736,7 @@ def add_folder(item):
     data = {"note": "", "path": "", "category": "folder", "icon_type": icon_type, "color": (0.8, 0.8, 0.8)}
     new_item.setData(data, QtCore.Qt.UserRole + 1)
     item.appendRow(new_item)
-    
+
 def open_parameter_tab(item, global_mouse_pos):
     node = hou.nodeBySessionId(int(item.data().get("session_id")))
     if node is None:
